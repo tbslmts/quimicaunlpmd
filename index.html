@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Malla Interactiva - Lic. Química UNLP</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2rem;
+    }
+    .materia {
+      cursor: pointer;
+      padding: 8px 12px;
+      margin: 6px;
+      border: 1px solid #999;
+      border-radius: 6px;
+      display: inline-block;
+      font-size: 14px;
+    }
+    .aprobada { background-color: #b2f2bb; }
+    .desbloqueada { background-color: #e0eaff; }
+    .bloqueada { background-color: #ffd6d6; }
+  </style>
+</head>
+<body>
+  <h1>Malla Interactiva - Licenciatura en Química (UNLP)</h1>
+  <h3>Primer Año</h3>
+  <div id="malla"></div>
+
+  <script>
+    const materias = {
+      "Álgebra, Cálculo Numérico y Geometría Analítica": [],
+      "Análisis Matemático I": ["Álgebra, Cálculo Numérico y Geometría Analítica"],
+      "Introducción a la Química": [],
+      "Física I": ["Análisis Matemático I"],
+      "Análisis Matemático II": ["Análisis Matemático I"],
+      "Química General": ["Introducción a la Química"]
+    };
+
+    const status = {};
+    Object.keys(materias).forEach(m => {
+      status[m] = 'bloqueada';
+    });
+
+    function checkDesbloqueo() {
+      for (const [m, reqs] of Object.entries(materias)) {
+        if (status[m] === 'aprobada') continue;
+        const habilitada = reqs.every(r => status[r] === 'aprobada');
+        status[m] = habilitada ? 'desbloqueada' : 'bloqueada';
+      }
+      render();
+    }
+
+    function render() {
+      const cont = document.getElementById('malla');
+      cont.innerHTML = '';
+      for (const m of Object.keys(materias)) {
+        const div = document.createElement('div');
+        div.textContent = m;
+        div.className = 'materia ' + status[m];
+        div.onclick = () => {
+          if (status[m] === 'desbloqueada') {
+            status[m] = 'aprobada';
+          } else if (status[m] === 'aprobada') {
+            status[m] = 'desbloqueada';
+          } else return;
+          checkDesbloqueo();
+        };
+        cont.appendChild(div);
+      }
+    }
+
+    checkDesbloqueo();
+  </script>
+</body>
+</html>
